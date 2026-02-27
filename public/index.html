@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DJ Joeri News Timer</title>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+padding-top:100px;
+background:#111;
+color:white;
+}
+
+#timer{
+font-size:60px;
+margin:20px;
+}
+
+button{
+padding:12px 20px;
+font-size:18px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Nog altijd geen nieuw artikel over DJ Joeri</h1>
+
+<div id="timer">...</div>
+
+<p>Totaal aantal artikels: <span id="count">...</span></p>
+
+<button onclick="share()">Share</button>
+
+<script>
+
+let lastArticle;
+
+async function loadNews(){
+
+const res = await fetch("/api/news");
+const data = await res.json();
+
+lastArticle = new Date(data.lastArticle);
+document.getElementById("count").innerText = data.totalArticles;
+
+}
+
+function updateTimer(){
+
+const now = new Date();
+const diff = now - lastArticle;
+
+const seconds = Math.floor(diff/1000)%60;
+const minutes = Math.floor(diff/60000)%60;
+const hours = Math.floor(diff/3600000);
+const days = Math.floor(hours/24);
+
+document.getElementById("timer").innerText =
+days+"d "+(hours%24)+"h "+minutes+"m "+seconds+"s";
+
+}
+
+function share(){
+
+const text =
+"Nog altijd geen nieuw artikel over DJ Joeri. Check de timer.";
+
+const url = window.location.href;
+
+if(navigator.share){
+navigator.share({text,url});
+}else{
+navigator.clipboard.writeText(text+" "+url);
+alert("Link gekopieerd!");
+}
+
+}
+
+loadNews();
+
+setInterval(updateTimer,1000);
+
+</script>
+
+</body>
+</html>
